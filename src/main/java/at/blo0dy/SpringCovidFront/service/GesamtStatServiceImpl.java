@@ -1,5 +1,6 @@
 package at.blo0dy.SpringCovidFront.service;
 
+import at.blo0dy.SpringCovidFront.model.GesamtStat;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -7,13 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 
-import java.util.Date;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 @Service
 @Slf4j
-public class AllgemeinDataServiceImpl implements AllgemeinDataService {
+public class GesamtStatServiceImpl implements GesamtStatService {
 
   public static final String BASE_URL = "http://localhost:8080/covid/api/v1" ;
 
@@ -31,7 +30,7 @@ public class AllgemeinDataServiceImpl implements AllgemeinDataService {
 
 
   public Map<Date, Integer> findAllNeueCovidFaelleGesamt() {
-    ResponseEntity<Map> response = restTemplate.getForEntity(BASE_URL + "/österreich",Map.class);
+    ResponseEntity<Map> response = restTemplate.getForEntity(BASE_URL + "/neueFaelle/österreich",Map.class);
 
     Map<Date, Integer> tmpMap = new TreeMap<Date, Integer>();
 
@@ -40,5 +39,16 @@ public class AllgemeinDataServiceImpl implements AllgemeinDataService {
     return tmpMap;
 
   }
+
+  @Override
+  public List<GesamtStat> findGesamtStatDataByBundesLand(String bundesland) {
+
+    ResponseEntity<GesamtStat[]> response = restTemplate.getForEntity(BASE_URL + "/" + bundesland, GesamtStat[].class);
+
+    List<GesamtStat> gesamtStatList = Arrays.asList(response.getBody());
+
+    return gesamtStatList;
+  }
+
 
 }
