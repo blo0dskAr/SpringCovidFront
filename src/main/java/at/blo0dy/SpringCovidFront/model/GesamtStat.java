@@ -22,30 +22,41 @@ public class GesamtStat {
   private String bundesland;
   private int anzahlEinwohner;
   private int anzahlNeueFaelle;
+  private int diffNeueFaelle;
   private int anzahlFaelleGesamt;
   private int anzahlFaelle7Tage;
+  private int diffFaelle7Tage;
   private BigDecimal inzidenz7Tage;
+  private BigDecimal diffInzidenz7Tage;
   private int anzahlNeueTote;
+  private int diffNeueTote;
   private int anzahltotegesamt;
   private int anzahlGeheilt;
+  private int diffGeheilt;
   private int anzahlGeheiltSum;
 
   public static final Path FILEPATH = Paths.get("H:/covidApp/CovidFaelle_Timeline.csv");
   public static final Path FILENAME = FILEPATH.getFileName();
   public static final String FETCHURL= "https://covid19-dashboard.ages.at/data/" + FILENAME;
 
-  public GesamtStat(Date datum, String bundesland, int anzahlEinwohner, int anzahlNeueFaelle, int anzahlFaelleGesamt, int anzahlFaelle7Tage,
-                    BigDecimal inzidenz7Tage, int anzahlNeueTote, int anzahltotegesamt, int anzahlGeheilt, int anzahlGeheiltSum) {
+  public GesamtStat(Date datum, String bundesland, int anzahlEinwohner, int anzahlNeueFaelle, int diffNeueFaelle, int anzahlFaelleGesamt,
+                    int anzahlFaelle7Tage, int diffFaelle7Tage, BigDecimal inzidenz7Tage, BigDecimal diffInzidenz7Tage, int anzahlNeueTote,
+                    int diffNeueTote, int anzahltotegesamt, int anzahlGeheilt, int diffGeheilt, int anzahlGeheiltSum) {
     this.datum = datum;
     this.bundesland = bundesland;
     this.anzahlEinwohner = anzahlEinwohner;
     this.anzahlNeueFaelle = anzahlNeueFaelle;
+    this.diffNeueFaelle = diffNeueFaelle;
     this.anzahlFaelleGesamt = anzahlFaelleGesamt;
     this.anzahlFaelle7Tage = anzahlFaelle7Tage;
+    this.diffFaelle7Tage = diffFaelle7Tage;
     this.inzidenz7Tage = inzidenz7Tage;
+    this.diffInzidenz7Tage = diffInzidenz7Tage;
     this.anzahlNeueTote = anzahlNeueTote;
+    this.diffNeueTote = diffNeueTote;
     this.anzahltotegesamt = anzahltotegesamt;
     this.anzahlGeheilt = anzahlGeheilt;
+    this.diffGeheilt = diffGeheilt;
     this.anzahlGeheiltSum = anzahlGeheiltSum;
   }
 }

@@ -1,4 +1,4 @@
-package at.blo0dy.SpringCovidFront.service;
+package at.blo0dy.SpringCovidFront.service.gesamtStat;
 
 import at.blo0dy.SpringCovidFront.model.GesamtStat;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +48,16 @@ public class GesamtStatServiceImpl implements GesamtStatService {
     List<GesamtStat> gesamtStatList = Arrays.asList(response.getBody());
 
     return gesamtStatList;
+  }
+
+  @Override
+  public GesamtStat findLatestGesamtStatDataByBundesland(List<GesamtStat> gesamtStatList, String bundesland) {
+    for ( int i = gesamtStatList.size() - 1;  i >= 0; i-- ) {
+      if (gesamtStatList.get(i).getBundesland().equals(bundesland)) {
+        return gesamtStatList.get(i);
+      }
+    }
+    return null;
   }
 
 

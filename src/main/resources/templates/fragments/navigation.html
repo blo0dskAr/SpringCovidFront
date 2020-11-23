@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+                xmlns:form="http://www.springframework.org/tags/form">
+<head>
+    <title>Doesnt Matter</title>
+</head>
+<body>
+
+
+<div id="app" class="container">
+    <nav class="navbar navbar-expand navbar-dark bg-gradient-dark" th:fragment="topNavigation">
+
+        <a class="navbar-brand" th:href="@{~/covid/index}">MyEck Logo</a>
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+<!--                <a th:class="${#strings.equals(activeLink, 'MitarbeiterHome')} ? 'nav-link active' : 'nav-link'" th:href="@{~/mitarbeiter/index}">Home <span class="sr-only">(current)</span></a>-->
+            </li>
+            <li class="nav-item">
+<!--                <a th:class="${#strings.startsWith(requestURI, '/mitarbeiter/admin/mitarbeiterAdministration')} ? 'nav-link active' : 'nav-link'" th:href="@{/mitarbeiter/admin/mitarbeiterAdministration/list}">Mitarbeiter</a>-->
+            </li>
+        </ul>
+    </nav>
+</div>
+
+</body>
+</html>

@@ -1,7 +1,7 @@
 package at.blo0dy.SpringCovidFront.controller;
 
 import at.blo0dy.SpringCovidFront.model.GesamtStat;
-import at.blo0dy.SpringCovidFront.service.GesamtStatService;
+import at.blo0dy.SpringCovidFront.service.gesamtStat.GesamtStatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
