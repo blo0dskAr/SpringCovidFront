@@ -41,9 +41,9 @@ public class GesamtStatServiceImpl implements GesamtStatService {
   }
 
   @Override
-  public List<GesamtStat> findGesamtStatDataByBundesLand(String bundesland) {
+  public List<GesamtStat> findGesamtStatDataByBundesland(String bundesland) {
 
-    ResponseEntity<GesamtStat[]> response = restTemplate.getForEntity(BASE_URL + "/" + bundesland, GesamtStat[].class);
+    ResponseEntity<GesamtStat[]> response = restTemplate.getForEntity(BASE_URL + "/getData/" + bundesland, GesamtStat[].class);
 
     List<GesamtStat> gesamtStatList = Arrays.asList(response.getBody());
 
@@ -58,6 +58,22 @@ public class GesamtStatServiceImpl implements GesamtStatService {
       }
     }
     return null;
+  }
+
+  @Override
+  public List<GesamtStat> findlatestGesamtStatsForBundeslaender() {
+
+    ResponseEntity<GesamtStat[]> response = restTemplate.getForEntity(BASE_URL + "/getLatestDataBundeslaender", GesamtStat[].class);
+
+    List<GesamtStat> gesamtStatList = Arrays.asList(response.getBody());
+
+    return gesamtStatList;
+  }
+
+  @Override
+  public Date findLatestGesamtStatDate() {
+
+    return restTemplate.getForObject(BASE_URL + "/getLatestDate", Date.class) ;
   }
 
 

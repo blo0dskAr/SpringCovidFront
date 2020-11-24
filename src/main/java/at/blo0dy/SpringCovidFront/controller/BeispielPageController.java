@@ -32,7 +32,7 @@ public class BeispielPageController {
 
     String bundesland = "österreich" ;
 
-    List<GesamtStat> gesamtStatList = gesamtStatService.findGesamtStatDataByBundesLand(bundesland);
+    List<GesamtStat> gesamtStatList = gesamtStatService.findGesamtStatDataByBundesland(bundesland);
 
     model.addAttribute("gesamtStatList", gesamtStatList);
 

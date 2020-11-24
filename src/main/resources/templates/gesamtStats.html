@@ -29,18 +29,59 @@
     <script th:inline="javascript">
 
         // Load the Visualization API and the corechart package.
-        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.load('current', { 'packages': ['controls', 'corechart'], 'language': 'de' });
 
         // Set a callback to run when the Google Visualization API is loaded.
         google.charts.setOnLoadCallback(drawNeueFaelleGesamtStat);
         google.charts.setOnLoadCallback(drawAnzahlToteGesamtStat);
         google.charts.setOnLoadCallback(drawAnzahlGeneseneGesamtStat);
-         google.charts.setOnLoadCallback(drawAnteilGesamtData);
+        google.charts.setOnLoadCallback(drawAnteilGesamtData);
+        google.charts.setOnLoadCallback(drawAnteileNeueNachBundesland);
+        google.charts.setOnLoadCallback(drawAnteileToteNachBundesland);
+        google.charts.setOnLoadCallback(drawAnteileGeneseneNachBundesland);
+        google.charts.setOnLoadCallback(drawAnteileGetesteteNachBundesland);
+        google.charts.setOnLoadCallback(drawAnzahlTestsGesamtStat);
+
+        // Load Rest Data
+        const rest_data_gesamt = /*[[${gesamtStatList}]]*/'noValue';
+        const rest_data_krankenhaus = /*[[${krankenhausStatList}]]*/'noValue';
+        const rest_data_gesamtLatest = /*[[${latestGesamtStatList}]]*/'noValue';
+        const rest_data_krankenhaus_latest = /*[[${latestKrankenhausStatList}]]*/'noValue';
+
+        const merged_rest_data = [];
+
+        for (var i1 = 0; i1 < rest_data_gesamt.length; i1++) {
+            for (var i2 = 0; i2 < rest_data_krankenhaus.length; i2++) {
+                if (rest_data_gesamt[i1].datum == rest_data_krankenhaus[i2].datum && rest_data_gesamt[i1].bundesland == rest_data_krankenhaus[i2].bundesland) {
+                    merged_rest_data.push({ 'datum': rest_data_gesamt[i1].datum, 'anzahlNeueFaelle': rest_data_gesamt[i1].anzahlNeueFaelle, 'diffTests': rest_data_krankenhaus[i2].diffTests });
+                }
+            }
+        };
+
+        $(window).resize(function () {
+            if (this.resizeTO) clearTimeout(this.resizeTO);
+            this.resizeTO = setTimeout(function () {
+                $(this).trigger('resizeEnd');
+            }, 500);
+        });
+
+        //redraw graph when window resize is completed 
+        $(window).on('resizeEnd', function () {
+        google.charts.setOnLoadCallback(drawNeueFaelleGesamtStat);
+        google.charts.setOnLoadCallback(drawAnzahlToteGesamtStat);
+        google.charts.setOnLoadCallback(drawAnzahlGeneseneGesamtStat);
+        google.charts.setOnLoadCallback(drawAnteilGesamtData);
+        google.charts.setOnLoadCallback(drawAnteileNeueNachBundesland);
+        google.charts.setOnLoadCallback(drawAnteileToteNachBundesland);
+        google.charts.setOnLoadCallback(drawAnteileGeneseneNachBundesland);
+        google.charts.setOnLoadCallback(drawAnteileGetesteteNachBundesland);
+        google.charts.setOnLoadCallback(drawAnzahlTestsGesamtStat);
+        });
+
+
 
 
         function drawNeueFaelleGesamtStat() {
-
-            const rest_data = /*[[${gesamtStatList}]]*/'noValue';
 
             let neueFaelleGesamtChartData = new google.visualization.DataTable();
             neueFaelleGesamtChartData.addColumn('string', 'Datum');
@@ -48,7 +89,7 @@
             neueFaelleGesamtChartData.addColumn('number', '7-Tages-Durchschnitt');
             neueFaelleGesamtChartData.addColumn('number', '7-Tages-Inzidenz');
 
-            rest_data.forEach(function (data) {
+            rest_data_gesamt.forEach(function (data) {
                 const datum = data.datum;
                 const neueFaelle = data.anzahlNeueFaelle;
                 const tagesDurchschn = data.anzahlFaelle7Tage / 7;
@@ -67,52 +108,48 @@
                     },
                 },
                 legend: { position: 'top', },
-                height: 350,
-<!--chartArea: {-->
-<!--top: 64, -->
-<!--left: 72, -->
-<!--bottom: 72, -->
-<!--right: 32, -->
-<!--                    }, -->
-            vAxes: {
-            0: {
-                title: 'Neue Fälle',
-                            },
-            1: {
-                title: 'Inzidenz',
-                    gridlines: {
-                    color: 'transparent'
-                }
-            }
-        },
-        vAxis: { title: 'Neue Fälle', },
-        hAxis: {
-            textPosition: 'out',
-                slantedText: true,
+                height: 360,
+                chartArea: {
+                    left: 128,
+                    right: 128,
+                },
+                vAxes: {
+                    0: {
+                        title: 'Neue Fälle',
+                    },
+                    1: {
+                        title: 'Inzidenz',
+                        gridlines: {
+                            color: 'transparent'
+                        }
+                    }
+                },
+                vAxis: { title: 'Neue Fälle', },
+                hAxis: {
+                    textPosition: 'out',
+                    slantedText: true,
                     slantedTextAngle: 90,
-                        textStyle: {
-                fontSize: 10,
-                         },
-        }
-               };
+                    textStyle: {
+                        fontSize: 10,
+                    },
+                }
+            };
 
-        let chart = new google.visualization.ComboChart(document.getElementById('drawNeueFaelleGesamtStat_div'));
-        chart.draw(neueFaelleGesamtChartData, options);
-          }
+            let chart = new google.visualization.ComboChart(document.getElementById('drawNeueFaelleGesamtStat_div'));
+            chart.draw(neueFaelleGesamtChartData, options);
+        }
 
 
 
 
         function drawAnzahlToteGesamtStat() {
 
-            const rest_data = /*[[${gesamtStatList}]]*/'noValue';
-
             let toteData = new google.visualization.DataTable();
             toteData.addColumn('string', 'Datum');
             toteData.addColumn('number', 'Anzahl');
             toteData.addColumn('number', 'Anzahl kumuliert');
 
-            rest_data.forEach(function (data) {
+            rest_data_gesamt.forEach(function (data) {
                 const datum = data.datum;
                 const neueTote = data.anzahlNeueTote;
                 const anzahlKum = data.anzahlToteGesamt;
@@ -129,7 +166,11 @@
                     },
                 },
                 legend: { position: 'top', },
-                height: 350,
+                height: 360,
+                chartArea: {
+                    left: 128,
+                    right: 128,
+                },
                 vAxes: {
                     0: {
                         title: 'Neue Fälle',
@@ -159,14 +200,12 @@
 
         function drawAnzahlGeneseneGesamtStat() {
 
-            const rest_data = /*[[${gesamtStatList}]]*/'noValue';
-
             let geneseneData = new google.visualization.DataTable();
             geneseneData.addColumn('string', 'Datum');
             geneseneData.addColumn('number', 'Anzahl');
             geneseneData.addColumn('number', 'Anzahl kumuliert');
 
-            rest_data.forEach(function (data) {
+            rest_data_gesamt.forEach(function (data) {
                 const datum = data.datum;
                 const neueGenesene = data.anzahlGeheilt;
                 const anzahlKum = data.anzahlGeheiltGesamt;
@@ -178,12 +217,17 @@
                 seriesType: 'bars',
                 series: {
                     1: {
-                        type: 'steppedArea',
+                        type: 'area',
                         targetAxisIndex: 1,
+                        color: 'green',
                     },
                 },
                 legend: { position: 'top', },
-                height: 350,
+                height: 360,
+                chartArea: {
+                    left: 128,
+                    right: 128,
+                },
                 vAxes: {
                     0: {
                         title: 'Neue Genesene',
@@ -212,11 +256,7 @@
 
 
 
-
         function drawAnteilGesamtData() {
-
-            const rest_data = /*[[${gesamtStatList}]]*/'noValue';
-
 
             let gesamtData = new google.visualization.DataTable();
             gesamtData.addColumn('string', 'Datum');
@@ -224,7 +264,7 @@
             gesamtData.addColumn('number', 'Genesene');
             gesamtData.addColumn('number', 'Aktive');
 
-            rest_data.forEach(function (data) {
+            rest_data_gesamt.forEach(function (data) {
                 const datum = data.datum;
                 const anzahlAktive = data.anzahlAktive;
                 const anzahlVerstorbeneKum = data.anzahlToteGesamt
@@ -236,8 +276,17 @@
             const options = {
                 title: 'Anteile nach Tag ',
                 legend: { position: 'top', },
-                height: 350,
+                height: 360,
+                chartArea: {
+                    left: 128,
+                    right: 128,
+                },
                 isStacked: 'true',
+                series: {
+                    0: { color: 'red', },
+                    1: { color: 'green', },
+                    2: { color: 'blue', }
+                },
                 vAxis: { title: 'Anzahl', },
                 hAxis: {
                     textPosition: 'out',
@@ -255,6 +304,209 @@
 
 
 
+        function drawAnzahlTestsGesamtStat() {
+
+            let testsData = new google.visualization.DataTable();
+            testsData.addColumn('string', 'Datum');
+            testsData.addColumn('number', 'Anzahl Tests');
+            testsData.addColumn('number', 'Prozent Fälle');
+
+            merged_rest_data.forEach(function (data) {
+                const datum = data.datum;
+                const diffTests = data.diffTests;
+                const faellePositiv = data.anzahlNeueFaelle / diffTests;
+                testsData.addRow([datum, diffTests, faellePositiv]);
+            });
+
+            const options = {
+                title: 'Anzahl Tests nach Tag ',
+                seriesType: 'bars',
+                series: {
+                    1: {
+                        type: 'steppedArea',
+                        targetAxisIndex: 1,
+                    },
+                },
+                legend: { position: 'top', },
+                height: 360,
+                chartArea: {
+                    left: 128,
+                    right: 128,
+                },
+                vAxes: {
+                    0: {
+                        title: 'Anzahl Tests',
+                    },
+                    1: {
+                        title: 'Prozent positiv',
+                        gridlines: {
+                            color: 'transparent',
+                        },
+                        format: '#%',
+                    },
+                },
+                vAxis: { title: 'Anzahl', },
+                hAxis: {
+                    textPosition: 'out',
+                    slantedText: true,
+                    slantedTextAngle: 90,
+                    textStyle: {
+                        fontSize: 10,
+                    },
+                }
+            };
+
+            let chart = new google.visualization.ComboChart(document.getElementById('drawAnzahlTestsGesamtStat_div'));
+            chart.draw(testsData, options);
+        }
+
+
+
+
+
+        // Anteile je nach Bundesland
+        //
+        //
+        function drawAnteileNeueNachBundesland() {
+
+            let gesamtData = new google.visualization.DataTable();
+            gesamtData.addColumn('string', 'Bundesland');
+            gesamtData.addColumn('number', 'Anzahl Neue');
+
+            rest_data_gesamtLatest.forEach(function (data) {
+                const bundesland = data.bundesland;
+                const anzahlNeueFaelle = data.anzahlNeueFaelle;
+                gesamtData.addRow([bundesland, anzahlNeueFaelle]);
+            });
+
+            var options = {
+                title: 'Anteil neue Fälle abs.',
+                is3D: true,
+                height: 300,
+                chartArea: {
+                    top: 32,
+                    left: 32,
+                    bottom: 32,
+                    right: 32,
+                },
+                legend: {
+                    alignment: 'center',
+                },
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('drawAnteileNeueNachBundesland_div'));
+            chart.draw(gesamtData, options);
+        }
+
+
+        function drawAnteileToteNachBundesland() {
+
+            let gesamtData = new google.visualization.DataTable();
+            gesamtData.addColumn('string', 'Bundesland');
+            gesamtData.addColumn('number', 'Anzahl Neue');
+
+            rest_data_gesamtLatest.forEach(function (data) {
+                const bundesland = data.bundesland;
+                const anzahlNeueTote = data.anzahlNeueTote;
+                gesamtData.addRow([bundesland, anzahlNeueTote]);
+            });
+
+            var options = {
+                title: 'Anteil Verstorbene abs.',
+                is3D: true,
+                height: 300,
+                chartArea: {
+                    top: 32,
+                    left: 32,
+                    bottom: 32,
+                    right: 32,
+                },
+                legend: {
+                    alignment: 'center',
+                },
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('drawAnteileToteNachBundesland_div'));
+            chart.draw(gesamtData, options);
+        }
+
+
+        function drawAnteileGeneseneNachBundesland() {
+
+            let gesamtData = new google.visualization.DataTable();
+            gesamtData.addColumn('string', 'Bundesland');
+            gesamtData.addColumn('number', 'Anzahl Neue');
+
+            rest_data_gesamtLatest.forEach(function (data) {
+                const bundesland = data.bundesland;
+                const anzahlGeheilt = data.anzahlGeheilt;
+                gesamtData.addRow([bundesland, anzahlGeheilt]);
+            });
+
+            var options = {
+                title: 'Anteil Genesene abs.',
+                is3D: true,
+                height: 300,
+                chartArea: {
+                    top: 32,
+                    left: 32,
+                    bottom: 32,
+                    right: 32,
+                },
+                legend: {
+                    alignment: 'center',
+                },
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('drawAnteileGeneseneNachBundesland_div'));
+            chart.draw(gesamtData, options);
+        }
+
+
+
+        function drawAnteileGetesteteNachBundesland() {
+
+            let krankenhausData = new google.visualization.DataTable();
+            krankenhausData.addColumn('string', 'Bundesland');
+            krankenhausData.addColumn('number', 'Anzahl Getestete');
+
+            rest_data_krankenhaus_latest.forEach(function (data) {
+                const bundesland = data.bundesland;
+                const anzahlGetestet = data.diffTests;
+                krankenhausData.addRow([bundesland, anzahlGetestet]);
+            });
+
+            var options = {
+                title: 'Anteil Tests abs.',
+                is3D: true,
+                height: 300,
+                chartArea: {
+                    top: 32,
+                    left: 32,
+                    bottom: 32,
+                    right: 32,
+                },
+                legend: {
+                    alignment: 'center',
+                },
+            };
+
+            var wrapper = new google.visualization.ChartWrapper({
+                chartType: 'PieChart',
+                dataTable: krankenhausData,
+                options: options,
+                containerId: 'drawAnteileGetesteteNachBundesland_div'
+            });
+
+            wrapper.draw();
+
+            // var chart = new google.visualization.PieChart(document.getElementById('drawAnteileGetesteteNachBundesland_div'));
+            // chart.draw(krankenhausData, options);
+        }
+
+
+
+
     </script>
 </head>
 
@@ -265,20 +517,40 @@
                 <div class="row">
                     <div class="col">
                         <nav class="navbar navbar-dark topbar mb-4 static-top">
-                            <h3 class="text-light pt-3 pl-3">Dashboard </h3>
-                            <form method="POST" th:action="@{/covid/index/}" th:object="${bundesland}"
-                                class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                                <div class="input-group">
-                                    <select id="name" class="custom-select" th:field="*{name}">
-                                        <option th:each="bundeslands : ${bundeslandList}"
-                                            th:value="${bundeslands.getName()}" th:text="${bundeslands.getName()}">
-                                    </select>
-                                    <div class="input-group-append">
-                                        <button class="btn btn-secondary" type="submit">Auswählen</button>
-                                    </div>
-                                </div>
-                            </form>
+                            <h3 class="text-light pt-3 pl-3" th:text="'Covid Dashboard - Stand: ' + ${#dates.format(latestDate, 'dd.MM.yyyy')}">Dashboard - Stand: </h3>
+<!--                            <form method="POST" th:action="@{/covid/index/}" th:object="${bundesland}"-->
+<!--                                class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">-->
+<!--                                <div class="input-group">-->
+<!--                                    <select id="name" class="custom-select" th:field="*{name}">-->
+<!--                                        <option th:each="bundeslands : ${bundeslandList}"-->
+<!--                                            th:value="${bundeslands.getName()}" th:text="${bundeslands.getName()}">-->
+<!--                                    </select>-->
+<!--                                    <div class="input-group-append">-->
+<!--                                        <button class="btn btn-secondary" type="submit">Auswählen</button>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </form>-->
                         </nav>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid">
+                <div class="form-group row  justify-content-center">
+                    <div class="col-auto">
+                        <form method="POST" th:action="@{/covid/index/}" th:object="${bundesland}"
+                              class="navbar-search">
+                            <div class="input-group">
+                                <label class="col-form-label mr-2 " for="name">Region wählen: </label>
+                                <select id="name" class="custom-select" th:field="*{name}">
+                                    <option th:each="bundeslands : ${bundeslandList}"
+                                            th:value="${bundeslands.getName()}" th:text="${bundeslands.getName()}">
+                                </select>
+                                <div class="input-group-append">
+                                    <button class="btn btn-secondary" type="submit">Auswählen</button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -286,7 +558,7 @@
 
             <!-- Neue Fälle -->
             <div class="container-fluid">
-                <h4 class="text-light text-center pt-3 pl-3">Veränderungen zum Vortag</h4>
+                <h4 class="text-light text-center pt-3 pl-3">Aktuelle Daten und Veränderungen zum Vortag</h4>
                 <div class="row justify-content-center">
                     <div class="col-sm-10 col-md-5 col-lg-4 col-xl-2 my-3 py-4 px-3 bg-gray-800">
                         <div class="pb-3">
@@ -462,6 +734,31 @@
             </div>
 
 
+            <th:block th:if="${bundesland.getName() == 'Österreich'}">
+                <div class="container-fluid">
+                    <h4 class="text-light text-center pt-3 pl-3">Anteile nach Bundesland - Heute</h4>
+                    <div class="row justify-content-center">
+                        <div class="col-sm-10 col-md-5 col-lg-4 col-xl-2 my-3 py-4 px-3 bg-gray-800">
+                            <div id="drawAnteileNeueNachBundesland_div"></div>
+                        </div>
+                        <div class="col-sm-10 col-md-5 col-lg-4 col-xl-2 my-3 ml-3 py-4 px-3 bg-gray-800">
+                            <div id="drawAnteileToteNachBundesland_div"></div>
+                        </div>
+                        <div class="col-sm-10 col-md-5 col-lg-4 col-xl-2 my-3 ml-3 py-4 px-3 bg-gray-800">
+                            <div id="drawAnteileGeneseneNachBundesland_div"></div>
+                        </div>
+                        <div class="col-sm-10 col-md-5 col-lg-4 col-xl-2 my-3 ml-3 py-4 px-3 bg-gray-800">
+                            <div id="drawAnteileGetesteteNachBundesland_div"></div>
+                        </div>
+                    </div>
+                </div>
+            </th:block>
+
+
+
+
+
+
 
             <h4 class="text-light text-center pt-3 pl-3">Neue Fälle nach Tag</h4>
 
@@ -500,6 +797,16 @@
                 <div class="row justify-content-center">
                     <div class="col-11 my-3 py-4 px-3 bg-gray-800">
                         <div id="drawAnteilGesamtStat_div"></div>
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="text-light text-center pt-3 pl-3">Anzahl Tests & Positiv-Quote</h4>
+
+            <div class="container-fluid">
+                <div class="row justify-content-center">
+                    <div class="col-11 my-3 py-4 px-3 bg-gray-800">
+                        <div id="drawAnzahlTestsGesamtStat_div"></div>
                     </div>
                 </div>
             </div>

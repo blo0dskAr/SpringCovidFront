@@ -11,4 +11,5 @@ public interface KrankenhausStatService {
 
   List<KrankenhausStat> findKrankenhausStatDataByBundesLand(String bundesland);
 
+  List<KrankenhausStat> findLatestKrankenhausStatsForBundeslaender();
 }

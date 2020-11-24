@@ -1,5 +1,6 @@
 package at.blo0dy.SpringCovidFront.service.krankenhausStat;
 
+import at.blo0dy.SpringCovidFront.model.GesamtStat;
 import at.blo0dy.SpringCovidFront.model.KrankenhausStat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,16 @@ public class KrankenhausStatServiceImpl implements KrankenhausStatService {
   @Override
   public List<KrankenhausStat> findKrankenhausStatDataByBundesLand(String bundesland) {
 
-    ResponseEntity<KrankenhausStat[]> response = restTemplate.getForEntity(BASE_URL + "/" + bundesland, KrankenhausStat[].class);
+    ResponseEntity<KrankenhausStat[]> response = restTemplate.getForEntity(BASE_URL + "/getData/" + bundesland, KrankenhausStat[].class);
+
+    List<KrankenhausStat> krankenhausStatList = Arrays.asList(response.getBody());
+
+    return krankenhausStatList;
+  }
+
+  @Override
+  public List<KrankenhausStat> findLatestKrankenhausStatsForBundeslaender() {
+    ResponseEntity<KrankenhausStat[]> response = restTemplate.getForEntity(BASE_URL + "/getLatestDataBundeslaender", KrankenhausStat[].class);
 
     List<KrankenhausStat> krankenhausStatList = Arrays.asList(response.getBody());
 

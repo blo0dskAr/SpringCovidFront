@@ -11253,6 +11253,11 @@ footer.sticky-footer .copyright {
   font-size: 0.8rem;
 }
 
+.footer {
+  position: relative;
+  margin-top: 20px;
+}
+
 body.sidebar-toggled footer.sticky-footer {
   width: 100%;
 }

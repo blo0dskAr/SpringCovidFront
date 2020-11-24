@@ -10,7 +10,11 @@ public interface GesamtStatService {
 
   Map<Date, Integer> findAllNeueCovidFaelleGesamt();
 
-  List<GesamtStat> findGesamtStatDataByBundesLand(String bundesland);
+  List<GesamtStat> findGesamtStatDataByBundesland(String bundesland);
 
   GesamtStat findLatestGesamtStatDataByBundesland(List<GesamtStat> gesamtStatList, String bundesland);
+
+  List<GesamtStat> findlatestGesamtStatsForBundeslaender();
+
+  Date findLatestGesamtStatDate();
 }
