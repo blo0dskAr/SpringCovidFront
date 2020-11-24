@@ -1,227 +1,277 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-     layout:decorate="~{mainlayout.html}">
+    layout:decorate="~{mainlayout.html}">
 
 <head>
-     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-     <title>GesamtStat Page</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>GesamtStat Page</title>
 
-     <meta name="keywords" content="Home" />
-     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="keywords" content="Home" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-     <!-- Bootstrap CSS -->
-     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
-          integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-     <link rel="stylesheet" href="../static/css/sb-admin-2.css" th:href="@{/css/sb-admin-2.css}">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+        integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/css/sb-admin-2.css" th:href="@{/css/sb-admin-2.css}">
 
 
     <!-- jQuery and JS bundle w/ Popper.js -->
-     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-          integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-          crossorigin="anonymous"></script>
-     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
-          integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
-          crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
+        crossorigin="anonymous"></script>
 
-     <!-- GooglCharts Query API and JS bundle w/ Popper.js -->
-     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <!-- GooglCharts Query API and JS bundle w/ Popper.js -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
-     <script th:inline="javascript">
+    <script th:inline="javascript">
 
-          // Load the Visualization API and the corechart package.
-          google.charts.load('current', { 'packages': ['corechart'] });
+        // Load the Visualization API and the corechart package.
+        google.charts.load('current', { 'packages': ['corechart'] });
 
-          // Set a callback to run when the Google Visualization API is loaded.
-          google.charts.setOnLoadCallback(drawNeueFaelleGesamtStat);
-          google.charts.setOnLoadCallback(drawAnzahlToteGesamtStat);
-          google.charts.setOnLoadCallback(drawAnzahlGeneseneGesamtStat);
+        // Set a callback to run when the Google Visualization API is loaded.
+        google.charts.setOnLoadCallback(drawNeueFaelleGesamtStat);
+        google.charts.setOnLoadCallback(drawAnzahlToteGesamtStat);
+        google.charts.setOnLoadCallback(drawAnzahlGeneseneGesamtStat);
+         google.charts.setOnLoadCallback(drawAnteilGesamtData);
 
 
-          function drawNeueFaelleGesamtStat() {
+        function drawNeueFaelleGesamtStat() {
 
-               const rest_data = /*[[${gesamtStatList}]]*/'noValue';
+            const rest_data = /*[[${gesamtStatList}]]*/'noValue';
 
-               let neueFaelleGesamtChartData = new google.visualization.DataTable();
-               neueFaelleGesamtChartData.addColumn('string', 'Datum');
-               neueFaelleGesamtChartData.addColumn('number', 'Anzahl');
-               neueFaelleGesamtChartData.addColumn('number', '7-Tages-Durchschnitt');
-               neueFaelleGesamtChartData.addColumn('number', '7-Tages-Inzidenz');
+            let neueFaelleGesamtChartData = new google.visualization.DataTable();
+            neueFaelleGesamtChartData.addColumn('string', 'Datum');
+            neueFaelleGesamtChartData.addColumn('number', 'Anzahl');
+            neueFaelleGesamtChartData.addColumn('number', '7-Tages-Durchschnitt');
+            neueFaelleGesamtChartData.addColumn('number', '7-Tages-Inzidenz');
 
-               rest_data.forEach(function (data) {
-                    const datum = data.datum;
-                    const neueFaelle = data.anzahlNeueFaelle;
-                    const tagesDurchschn = data.anzahlFaelle7Tage / 7;
-                    const tagesInzidenz = data.inzidenz7Tage;
-                    neueFaelleGesamtChartData.addRow([datum, neueFaelle, tagesDurchschn, tagesInzidenz]);
-               });
+            rest_data.forEach(function (data) {
+                const datum = data.datum;
+                const neueFaelle = data.anzahlNeueFaelle;
+                const tagesDurchschn = data.anzahlFaelle7Tage / 7;
+                const tagesInzidenz = data.inzidenz7Tage;
+                neueFaelleGesamtChartData.addRow([datum, neueFaelle, tagesDurchschn, tagesInzidenz]);
+            });
 
-               const options = {
-                    title: 'Monthly Coffee Production by ',
-                    seriesType: 'bars',
-                    series: { 1: { type: 'line' },
-                              2: { type: 'line',
-                                   targetAxisIndex: 1,
-                                 },
+            const options = {
+                title: 'Neue Krankheitsfälle nach Tag ',
+                seriesType: 'bars',
+                series: {
+                    1: { type: 'line' },
+                    2: {
+                        type: 'line',
+                        targetAxisIndex: 1,
+                    },
+                },
+                legend: { position: 'top', },
+                height: 350,
+<!--chartArea: {-->
+<!--top: 64, -->
+<!--left: 72, -->
+<!--bottom: 72, -->
+<!--right: 32, -->
+<!--                    }, -->
+            vAxes: {
+            0: {
+                title: 'Neue Fälle',
                             },
-                    legend: {position: 'top',},
-                    height: 350,
-<!--                    chartArea: {-->
-<!--                         top: 64,-->
-<!--                         left: 72,-->
-<!--                         bottom: 72,-->
-<!--                         right: 32,-->
-<!--                    },-->
-                    vAxes: {
-                        0: {
-                            title: 'Neue Fälle',
-                            },
-                        1: {
-                            title: 'Inzidenz',
-                            gridlines: {
-                                color: 'transparent'
-                                        }
-                            }
-                        },
-                    vAxis: { title: 'Neue Fälle', },
-                    hAxis: {
-                         textPosition: 'out',
-                         slantedText: true,
-                         slantedTextAngle: 90,
-                         textStyle: {
-                              fontSize: 10,
+            1: {
+                title: 'Inzidenz',
+                    gridlines: {
+                    color: 'transparent'
+                }
+            }
+        },
+        vAxis: { title: 'Neue Fälle', },
+        hAxis: {
+            textPosition: 'out',
+                slantedText: true,
+                    slantedTextAngle: 90,
+                        textStyle: {
+                fontSize: 10,
                          },
-                    }
+        }
                };
 
-               let chart = new google.visualization.ComboChart(document.getElementById('drawNeueFaelleGesamtStat_div'));
-               chart.draw(neueFaelleGesamtChartData, options);
+        let chart = new google.visualization.ComboChart(document.getElementById('drawNeueFaelleGesamtStat_div'));
+        chart.draw(neueFaelleGesamtChartData, options);
           }
 
 
 
 
-           function drawAnzahlToteGesamtStat() {
+        function drawAnzahlToteGesamtStat() {
 
-               const rest_data = /*[[${gesamtStatList}]]*/'noValue';
+            const rest_data = /*[[${gesamtStatList}]]*/'noValue';
 
-               let toteData = new google.visualization.DataTable();
-               toteData.addColumn('string', 'Datum');
-               toteData.addColumn('number', 'Anzahl');
-               toteData.addColumn('number', 'Anzahl kumuliert');
+            let toteData = new google.visualization.DataTable();
+            toteData.addColumn('string', 'Datum');
+            toteData.addColumn('number', 'Anzahl');
+            toteData.addColumn('number', 'Anzahl kumuliert');
 
-               rest_data.forEach(function (data) {
-                    const datum = data.datum;
-                    const neueTote = data.anzahlNeueTote;
-                    const anzahlKum = data.anzahlToteGesamt;
-                    toteData.addRow([datum, neueTote, anzahlKum]);
-               });
+            rest_data.forEach(function (data) {
+                const datum = data.datum;
+                const neueTote = data.anzahlNeueTote;
+                const anzahlKum = data.anzahlToteGesamt;
+                toteData.addRow([datum, neueTote, anzahlKum]);
+            });
 
-               const options = {
-                    title: 'Monthly Coffee Production by ',
-                    seriesType: 'bars',
-                    series: { 1: { type: 'area',
-                                   targetAxisIndex: 1,
-                                 },
-                            },
-                    legend: {position: 'top',},
-                    height: 350,
-                    vAxes: {
-                        0: {
-                            title: 'Neue Fälle',
-                            },
-                        1: {
-                            title: 'Anzahl kum.',
-                            gridlines: {
-                                color: 'transparent'
-                                        }
-                            }
-                        },
-                    vAxis: { title: 'Anzahl', },
-                    hAxis: {
-                         textPosition: 'out',
-                         slantedText: true,
-                         slantedTextAngle: 90,
-                         textStyle: {
-                              fontSize: 10,
-                         },
+            const options = {
+                title: 'Neue Verstorbene nach Tag ',
+                seriesType: 'bars',
+                series: {
+                    1: {
+                        type: 'area',
+                        targetAxisIndex: 1,
+                    },
+                },
+                legend: { position: 'top', },
+                height: 350,
+                vAxes: {
+                    0: {
+                        title: 'Neue Fälle',
+                    },
+                    1: {
+                        title: 'Anzahl kum.',
+                        gridlines: {
+                            color: 'transparent'
+                        }
                     }
-               };
+                },
+                vAxis: { title: 'Anzahl', },
+                hAxis: {
+                    textPosition: 'out',
+                    slantedText: true,
+                    slantedTextAngle: 90,
+                    textStyle: {
+                        fontSize: 10,
+                    },
+                }
+            };
 
-               let chart = new google.visualization.ComboChart(document.getElementById('drawAnzahlToteGesamtStat_div'));
-               chart.draw(toteData, options);
-          }
+            let chart = new google.visualization.ComboChart(document.getElementById('drawAnzahlToteGesamtStat_div'));
+            chart.draw(toteData, options);
+        }
 
 
-           function drawAnzahlGeneseneGesamtStat() {
+        function drawAnzahlGeneseneGesamtStat() {
 
-               const rest_data = /*[[${gesamtStatList}]]*/'noValue';
+            const rest_data = /*[[${gesamtStatList}]]*/'noValue';
 
-               let geneseneData = new google.visualization.DataTable();
-               geneseneData.addColumn('string', 'Datum');
-               geneseneData.addColumn('number', 'Anzahl');
-               geneseneData.addColumn('number', 'Anzahl kumuliert');
+            let geneseneData = new google.visualization.DataTable();
+            geneseneData.addColumn('string', 'Datum');
+            geneseneData.addColumn('number', 'Anzahl');
+            geneseneData.addColumn('number', 'Anzahl kumuliert');
 
-               rest_data.forEach(function (data) {
-                    const datum = data.datum;
-                    const neueGenesene = data.anzahlGeheilt;
-                    const anzahlKum = data.anzahlGeheiltGesamt;
-                    geneseneData.addRow([datum, neueGenesene, anzahlKum]);
-               });
+            rest_data.forEach(function (data) {
+                const datum = data.datum;
+                const neueGenesene = data.anzahlGeheilt;
+                const anzahlKum = data.anzahlGeheiltGesamt;
+                geneseneData.addRow([datum, neueGenesene, anzahlKum]);
+            });
 
-               const options = {
-                    title: 'Monthly Coffee Production by ',
-                    seriesType: 'bars',
-                    series: { 1: { type: 'steppedArea',
-                                   targetAxisIndex: 1,
-                                 },
-                            },
-                    legend: {position: 'top',},
-                    height: 350,
-                    vAxes: {
-                        0: {
-                            title: 'Neue Genesene',
-                            },
-                        1: {
-                            title: 'Anzahl kum.',
-                            gridlines: {
-                                color: 'transparent'
-                                        }
-                            }
-                        },
-                    vAxis: { title: 'Anzahl', },
-                    hAxis: {
-                         textPosition: 'out',
-                         slantedText: true,
-                         slantedTextAngle: 90,
-                         textStyle: {
-                              fontSize: 10,
-                         },
+            const options = {
+                title: 'Neue Genesene nach Tag ',
+                seriesType: 'bars',
+                series: {
+                    1: {
+                        type: 'steppedArea',
+                        targetAxisIndex: 1,
+                    },
+                },
+                legend: { position: 'top', },
+                height: 350,
+                vAxes: {
+                    0: {
+                        title: 'Neue Genesene',
+                    },
+                    1: {
+                        title: 'Anzahl kum.',
+                        gridlines: {
+                            color: 'transparent'
+                        }
                     }
-               };
+                },
+                vAxis: { title: 'Anzahl', },
+                hAxis: {
+                    textPosition: 'out',
+                    slantedText: true,
+                    slantedTextAngle: 90,
+                    textStyle: {
+                        fontSize: 10,
+                    },
+                }
+            };
 
-               let chart = new google.visualization.ComboChart(document.getElementById('drawAnzahlGeneseneGesamtStat_div'));
-               chart.draw(geneseneData, options);
-          }
+            let chart = new google.visualization.ComboChart(document.getElementById('drawAnzahlGeneseneGesamtStat_div'));
+            chart.draw(geneseneData, options);
+        }
 
 
-     </script>
+
+
+        function drawAnteilGesamtData() {
+
+            const rest_data = /*[[${gesamtStatList}]]*/'noValue';
+
+
+            let gesamtData = new google.visualization.DataTable();
+            gesamtData.addColumn('string', 'Datum');
+            gesamtData.addColumn('number', 'Verstorbene');
+            gesamtData.addColumn('number', 'Genesene');
+            gesamtData.addColumn('number', 'Aktive');
+
+            rest_data.forEach(function (data) {
+                const datum = data.datum;
+                const anzahlAktive = data.anzahlAktive;
+                const anzahlVerstorbeneKum = data.anzahlToteGesamt
+                const anzahlGeneseneKum = data.anzahlGeheiltGesamt;
+                gesamtData.addRow([datum, anzahlVerstorbeneKum, anzahlGeneseneKum, anzahlAktive]);
+            });
+
+
+            const options = {
+                title: 'Anteile nach Tag ',
+                legend: { position: 'top', },
+                height: 350,
+                isStacked: 'true',
+                vAxis: { title: 'Anzahl', },
+                hAxis: {
+                    textPosition: 'out',
+                    slantedText: true,
+                    slantedTextAngle: 90,
+                    textStyle: {
+                        fontSize: 10,
+                    },
+                }
+            };
+
+            var chart = new google.visualization.AreaChart(document.getElementById('drawAnteilGesamtStat_div'));
+            chart.draw(gesamtData, options);
+        }
+
+
+
+    </script>
 </head>
 
 <body class="bg-gray-900">
-<div layout:fragment="content">
-    <main>
+    <div layout:fragment="content">
+        <main>
             <div class="container-fluid">
                 <div class="row">
                     <div class="col">
                         <nav class="navbar navbar-dark topbar mb-4 static-top">
                             <h3 class="text-light pt-3 pl-3">Dashboard </h3>
                             <form method="POST" th:action="@{/covid/index/}" th:object="${bundesland}"
-                                  class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                                class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
                                 <div class="input-group">
                                     <select id="name" class="custom-select" th:field="*{name}">
                                         <option th:each="bundeslands : ${bundeslandList}"
-                                                th:value="${bundeslands.getName()}"
-                                                th:text="${bundeslands.getName()}">
+                                            th:value="${bundeslands.getName()}" th:text="${bundeslands.getName()}">
                                     </select>
                                     <div class="input-group-append">
                                         <button class="btn btn-secondary" type="submit">Auswählen</button>
@@ -238,8 +288,8 @@
             <div class="container-fluid">
                 <h4 class="text-light text-center pt-3 pl-3">Veränderungen zum Vortag</h4>
                 <div class="row justify-content-center">
-                    <div class="col-2 my-3 py-4 px-3 bg-gray-800">
-                        <div class="col pb-3">
+                    <div class="col-sm-10 col-md-5 col-lg-4 col-xl-2 my-3 py-4 px-3 bg-gray-800">
+                        <div class="pb-3">
                             <div class="card border-left-primary shadow py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
@@ -247,10 +297,10 @@
                                             <div class="h2 font-weight-bold text-primary text-uppercase mb-1">
                                                 Neue Fälle:</div>
                                             <span class="h3 mb-0 font-weight-bold text-gray-800"
-                                                  th:text="${latestGesamtStat.getAnzahlNeueFaelle()}" >666</span>
+                                                th:text="${latestGesamtStat.getAnzahlNeueFaelle()}">666</span>
                                             <span class="h5 mb-0 ml-2 font-weight-bold"
-                                                  th:classappend="${latestGesamtStat.getDiffNeueFaelle() >= 0 ? 'text-success' : 'text-danger'}"
-                                                  th:text="'(' + ${latestGesamtStat.getDiffNeueFaelle() >= 0 ? '+' : ''} + ${latestGesamtStat.getDiffNeueFaelle()} + ')' ">123</span>
+                                                th:classappend="${latestGesamtStat.getDiffNeueFaelle() >= 0 ? 'text-success' : 'text-danger'}"
+                                                th:text="'(' + ${latestGesamtStat.getDiffNeueFaelle() >= 0 ? '+' : ''} + ${latestGesamtStat.getDiffNeueFaelle()} + ')' ">123</span>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -261,19 +311,17 @@
                         </div>
 
                         <!-- Neue Fälle Gesamt -->
-                        <div class="col">
-                            <div class="card border-left-primary shadow py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="h2 font-weight-bold text-primary text-uppercase mb-1">
-                                                Fälle Gesamt:</div>
-                                            <span class="h3 mb-0 font-weight-bold text-gray-800"
-                                                  th:text="${latestGesamtStat.getAnzahlFaelleGesamt()}" >666</span>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                                        </div>
+                        <div class="card border-left-primary shadow py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="h2 font-weight-bold text-primary text-uppercase mb-1">
+                                            Fälle Gesamt:</div>
+                                        <span class="h3 mb-0 font-weight-bold text-gray-800"
+                                            th:text="${latestGesamtStat.getAnzahlFaelleGesamt()}">666</span>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
                                     </div>
                                 </div>
                             </div>
@@ -282,8 +330,8 @@
 
 
                     <!-- 7 Tages Durchschnitt -->
-                    <div class="col-2 my-3 ml-4 py-4 px-3 bg-gray-800">
-                        <div class="col pb-3">
+                    <div class="col-sm-10 col-md-5 col-lg-4 col-xl-2 my-3 ml-3 py-4 px-3 bg-gray-800">
+                        <div class="pb-3">
                             <div class="card border-left-success shadow py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
@@ -291,10 +339,10 @@
                                             <div class="h2 font-weight-bold text-success text-uppercase mb-1">
                                                 7-Tages Ø:</div>
                                             <span class="h3 mb-0 font-weight-bold text-gray-800"
-                                                  th:text="${latestGesamtStat.getAnzahlFaelle7Tage()}" >666</span>
+                                                th:text="${latestGesamtStat.getAnzahlFaelle7Tage()}">666</span>
                                             <span class="h5 mb-0 ml-2 font-weight-bold"
-                                                  th:classappend="${latestGesamtStat.getDiffFaelle7Tage() >= 0 ? 'text-success' : 'text-danger'}"
-                                                  th:text="'(' + ${latestGesamtStat.getDiffFaelle7Tage() >= 0 ? '+' : ''} + ${latestGesamtStat.getDiffFaelle7Tage()} + ')' ">123</span>
+                                                th:classappend="${latestGesamtStat.getDiffFaelle7Tage() >= 0 ? 'text-success' : 'text-danger'}"
+                                                th:text="'(' + ${latestGesamtStat.getDiffFaelle7Tage() >= 0 ? '+' : ''} + ${latestGesamtStat.getDiffFaelle7Tage()} + ')' ">123</span>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -305,22 +353,20 @@
                         </div>
 
                         <!-- 7 Tages Inzidenz -->
-                        <div class="col">
-                            <div class="card border-left-success shadow py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="h2 font-weight-bold text-success text-uppercase mb-1">
-                                                7-Tages Inzidenz:</div>
-                                            <span class="h3 mb-0 font-weight-bold text-gray-800"
-                                                  th:text="${latestGesamtStat.getInzidenz7Tage()}" >666</span>
-                                            <span class="h5 mb-0 ml-2 font-weight-bold"
-                                                  th:classappend="${latestGesamtStat.getDiffInzidenz7Tage() >= 0 ? 'text-success' : 'text-danger'}"
-                                                  th:text="'(' + ${latestGesamtStat.getDiffInzidenz7Tage() >= 0 ? '+' : ''} + ${latestGesamtStat.getDiffInzidenz7Tage()} + ')' ">123</span>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                                        </div>
+                        <div class="card border-left-success shadow py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="h2 font-weight-bold text-success text-uppercase mb-1">
+                                            7-Tages Inzidenz:</div>
+                                        <span class="h3 mb-0 font-weight-bold text-gray-800"
+                                            th:text="${latestGesamtStat.getInzidenz7Tage()}">666</span>
+                                        <span class="h5 mb-0 ml-2 font-weight-bold"
+                                            th:classappend="${latestGesamtStat.getDiffInzidenz7Tage() >= 0 ? 'text-success' : 'text-danger'}"
+                                            th:text="'(' + ${latestGesamtStat.getDiffInzidenz7Tage() >= 0 ? '+' : ''} + ${latestGesamtStat.getDiffInzidenz7Tage()} + ')' ">123</span>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
                                     </div>
                                 </div>
                             </div>
@@ -329,8 +375,8 @@
 
 
                     <!-- Neue TodesFälle -->
-                    <div class="col-2 my-3 ml-4 py-4 px-3 bg-gray-800">
-                        <div class="col pb-3">
+                    <div class="col-sm-10 col-md-5 col-lg-4 col-xl-2 my-3 ml-3 py-4 px-3 bg-gray-800">
+                        <div class="pb-3">
                             <div class="card border-left-warning shadow py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
@@ -338,10 +384,10 @@
                                             <div class="h2 font-weight-bold text-warning text-uppercase mb-1">
                                                 Neue Tote:</div>
                                             <span class="h3 mb-0 font-weight-bold text-gray-800"
-                                                  th:text="${latestGesamtStat.getAnzahlNeueTote()}" >666</span>
+                                                th:text="${latestGesamtStat.getAnzahlNeueTote()}">666</span>
                                             <span class="h5 mb-0 ml-2 font-weight-bold"
-                                                  th:classappend="${latestGesamtStat.getDiffNeueTote() >= 0 ? 'text-success' : 'text-danger'}"
-                                                  th:text="'(' + ${latestGesamtStat.getDiffNeueTote() >= 0 ? '+' : ''} + ${latestGesamtStat.getDiffNeueTote()} + ')' ">123</span>
+                                                th:classappend="${latestGesamtStat.getDiffNeueTote() >= 0 ? 'text-success' : 'text-danger'}"
+                                                th:text="'(' + ${latestGesamtStat.getDiffNeueTote() >= 0 ? '+' : ''} + ${latestGesamtStat.getDiffNeueTote()} + ')' ">123</span>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -352,19 +398,17 @@
                         </div>
 
                         <!-- TodesFälle gesamt -->
-                        <div class="col">
-                            <div class="card border-left-warning shadow py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="h2 font-weight-bold text-warning text-uppercase mb-1">
-                                                Tote gesamt:</div>
-                                            <span class="h3 mb-0 font-weight-bold text-gray-800"
-                                                  th:text="${latestGesamtStat.getAnzahlToteGesamt()}" >666</span>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                                        </div>
+                        <div class="card border-left-warning shadow py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="h2 font-weight-bold text-warning text-uppercase mb-1">
+                                            Tote gesamt:</div>
+                                        <span class="h3 mb-0 font-weight-bold text-gray-800"
+                                            th:text="${latestGesamtStat.getAnzahlToteGesamt()}">666</span>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
                                     </div>
                                 </div>
                             </div>
@@ -375,8 +419,8 @@
 
 
                     <!-- Neue Genesene -->
-                    <div class="col-2 my-3 ml-4 py-4 px-3 bg-gray-800">
-                        <div class="col pb-3">
+                    <div class="col-sm-10 col-md-5 col-lg-4 col-xl-2 my-3 ml-3 py-4 px-3 bg-gray-800">
+                        <div class="pb-3">
                             <div class="card border-left-info shadow py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
@@ -384,10 +428,10 @@
                                             <div class="h2 font-weight-bold text-info text-uppercase mb-1">
                                                 Neue Genesene:</div>
                                             <span class="h3 mb-0 font-weight-bold text-gray-800"
-                                                  th:text="${latestGesamtStat.getAnzahlGeheilt()}" >666</span>
+                                                th:text="${latestGesamtStat.getAnzahlGeheilt()}">666</span>
                                             <span class="h5 mb-0 ml-2 font-weight-bold"
-                                                  th:classappend="${latestGesamtStat.getDiffGeheilt() >= 0 ? 'text-success' : 'text-danger'}"
-                                                  th:text="'(' + ${latestGesamtStat.getDiffGeheilt() >= 0 ? '+' : ''} + ${latestGesamtStat.getDiffGeheilt()} + ')' ">123</span>
+                                                th:classappend="${latestGesamtStat.getDiffGeheilt() >= 0 ? 'text-success' : 'text-danger'}"
+                                                th:text="'(' + ${latestGesamtStat.getDiffGeheilt() >= 0 ? '+' : ''} + ${latestGesamtStat.getDiffGeheilt()} + ')' ">123</span>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -398,19 +442,17 @@
                         </div>
 
                         <!-- Genesene gesamt -->
-                        <div class="col">
-                            <div class="card border-left-info shadow py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="h2 font-weight-bold text-info text-uppercase mb-1">
-                                                Genesene gesamt:</div>
-                                            <span class="h3 mb-0 font-weight-bold text-gray-800"
-                                                  th:text="${latestGesamtStat.getAnzahlGeheiltGesamt()}" >666</span>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                                        </div>
+                        <div class="card border-left-info shadow py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="h2 font-weight-bold text-info text-uppercase mb-1">
+                                            Genesene gesamt:</div>
+                                        <span class="h3 mb-0 font-weight-bold text-gray-800"
+                                            th:text="${latestGesamtStat.getAnzahlGeheiltGesamt()}">666</span>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
                                     </div>
                                 </div>
                             </div>
@@ -421,35 +463,50 @@
 
 
 
-        <h4 class="text-light text-center pt-3 pl-3">Neue Fälle nach Tag</h4>
+            <h4 class="text-light text-center pt-3 pl-3">Neue Fälle nach Tag</h4>
 
-        <div class="container-fluid">
-            <div class="row justify-content-center">
-                <div class="col-11 my-3 py-4 px-3 bg-gray-800">
-                    <div id="drawNeueFaelleGesamtStat_div"></div>
+            <div class="container-fluid">
+                <div class="row justify-content-center">
+                    <div class="col-11 my-3 py-4 px-3 bg-gray-800">
+                        <div id="drawNeueFaelleGesamtStat_div"></div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="container-fluid">
-            <div class="row justify-content-center">
-                <div class="col-11 my-3 py-4 px-3 bg-gray-800">
-                    <div id="drawAnzahlToteGesamtStat_div"></div>
+            <h4 class="text-light text-center pt-3 pl-3">Neue Verstorbene nach Tag</h4>
+
+            <div class="container-fluid">
+                <div class="row justify-content-center">
+                    <div class="col-11 my-3 py-4 px-3 bg-gray-800">
+                        <div id="drawAnzahlToteGesamtStat_div"></div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="container-fluid">
-            <div class="row justify-content-center">
-                <div class="col-11 my-3 py-4 px-3 bg-gray-800">
-                    <div id="drawAnzahlGeneseneGesamtStat_div"></div>
+            <h4 class="text-light text-center pt-3 pl-3">Neue Genesene nach Tag</h4>
+
+            <div class="container-fluid">
+                <div class="row justify-content-center">
+                    <div class="col-11 my-3 py-4 px-3 bg-gray-800">
+                        <div id="drawAnzahlGeneseneGesamtStat_div"></div>
+                    </div>
                 </div>
             </div>
-        </div>
 
 
-    </main>
-</div>
+            <h4 class="text-light text-center pt-3 pl-3">Anteile Aktive/Genesene/Verstorbene</h4>
+
+            <div class="container-fluid">
+                <div class="row justify-content-center">
+                    <div class="col-11 my-3 py-4 px-3 bg-gray-800">
+                        <div id="drawAnteilGesamtStat_div"></div>
+                    </div>
+                </div>
+            </div>
+
+
+        </main>
+    </div>
 </body>
 
 </html>

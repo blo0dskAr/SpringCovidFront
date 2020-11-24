@@ -14,7 +14,7 @@ import java.util.*;
 @Slf4j
 public class GesamtStatServiceImpl implements GesamtStatService {
 
-  public static final String BASE_URL = "http://localhost:8080/covid/api/v1" ;
+  public static final String BASE_URL = "http://localhost:8080/covid/api/gesamt/v1" ;
 
   @Autowired
   RestTemplate restTemplate;

@@ -34,6 +34,8 @@ public class GesamtStat {
   private int anzahlGeheilt;
   private int diffGeheilt;
   private int anzahlGeheiltGesamt;
+  int anzahlAktive;
+
 
   public static final Path FILEPATH = Paths.get("H:/covidApp/CovidFaelle_Timeline.csv");
   public static final Path FILENAME = FILEPATH.getFileName();
@@ -41,7 +43,7 @@ public class GesamtStat {
 
   public GesamtStat(Date datum, String bundesland, int anzahlEinwohner, int anzahlNeueFaelle, int diffNeueFaelle, int anzahlFaelleGesamt,
                     int anzahlFaelle7Tage, int diffFaelle7Tage, BigDecimal inzidenz7Tage, BigDecimal diffInzidenz7Tage, int anzahlNeueTote,
-                    int diffNeueTote, int anzahlToteGesamt, int anzahlGeheilt, int diffGeheilt, int anzahlGeheiltGesamt) {
+                    int diffNeueTote, int anzahlToteGesamt, int anzahlGeheilt, int diffGeheilt, int anzahlGeheiltGesamt, int anzahlAktive ) {
     this.datum = datum;
     this.bundesland = bundesland;
     this.anzahlEinwohner = anzahlEinwohner;
@@ -58,5 +60,6 @@ public class GesamtStat {
     this.anzahlGeheilt = anzahlGeheilt;
     this.diffGeheilt = diffGeheilt;
     this.anzahlGeheiltGesamt = anzahlGeheiltGesamt;
+    this.anzahlAktive = anzahlAktive;
   }
 }
