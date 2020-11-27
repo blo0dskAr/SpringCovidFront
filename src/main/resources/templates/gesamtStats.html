@@ -31,16 +31,24 @@
         // Load the Visualization API and the corechart package.
         google.charts.load('current', { 'packages': ['controls', 'corechart'], 'language': 'de' });
 
+        let activeBundesland = /*[[${bundesland}]]*/'noValue';
+        console.log(activeBundesland);
+
         // Set a callback to run when the Google Visualization API is loaded.
         google.charts.setOnLoadCallback(drawNeueFaelleGesamtStat);
         google.charts.setOnLoadCallback(drawAnzahlToteGesamtStat);
         google.charts.setOnLoadCallback(drawAnzahlGeneseneGesamtStat);
         google.charts.setOnLoadCallback(drawAnteilGesamtData);
-        google.charts.setOnLoadCallback(drawAnteileNeueNachBundesland);
-        google.charts.setOnLoadCallback(drawAnteileToteNachBundesland);
-        google.charts.setOnLoadCallback(drawAnteileGeneseneNachBundesland);
-        google.charts.setOnLoadCallback(drawAnteileGetesteteNachBundesland);
+        if (activeBundesland.name == 'Österreich') {
+            google.charts.setOnLoadCallback(drawAnteileNeueNachBundesland);
+            google.charts.setOnLoadCallback(drawAnteileToteNachBundesland);
+            google.charts.setOnLoadCallback(drawAnteileGeneseneNachBundesland);
+            google.charts.setOnLoadCallback(drawAnteileGetesteteNachBundesland);
+        }
         google.charts.setOnLoadCallback(drawAnzahlTestsGesamtStat);
+        google.charts.setOnLoadCallback(drawKrankenhausKapazitaetenStat);
+
+
 
         // Load Rest Data
         const rest_data_gesamt = /*[[${gesamtStatList}]]*/'noValue';
@@ -67,15 +75,19 @@
 
         //redraw graph when window resize is completed 
         $(window).on('resizeEnd', function () {
-        google.charts.setOnLoadCallback(drawNeueFaelleGesamtStat);
-        google.charts.setOnLoadCallback(drawAnzahlToteGesamtStat);
-        google.charts.setOnLoadCallback(drawAnzahlGeneseneGesamtStat);
-        google.charts.setOnLoadCallback(drawAnteilGesamtData);
-        google.charts.setOnLoadCallback(drawAnteileNeueNachBundesland);
-        google.charts.setOnLoadCallback(drawAnteileToteNachBundesland);
-        google.charts.setOnLoadCallback(drawAnteileGeneseneNachBundesland);
-        google.charts.setOnLoadCallback(drawAnteileGetesteteNachBundesland);
-        google.charts.setOnLoadCallback(drawAnzahlTestsGesamtStat);
+            google.charts.setOnLoadCallback(drawNeueFaelleGesamtStat);
+            google.charts.setOnLoadCallback(drawAnzahlToteGesamtStat);
+            google.charts.setOnLoadCallback(drawAnzahlGeneseneGesamtStat);
+            google.charts.setOnLoadCallback(drawAnteilGesamtData);
+            if (activeBundesland.name == 'Österreich') {
+                google.charts.setOnLoadCallback(drawAnteileNeueNachBundesland);
+                google.charts.setOnLoadCallback(drawAnteileToteNachBundesland);
+                google.charts.setOnLoadCallback(drawAnteileGeneseneNachBundesland);
+                google.charts.setOnLoadCallback(drawAnteileGetesteteNachBundesland);
+            }
+            google.charts.setOnLoadCallback(drawAnzahlTestsGesamtStat);
+            google.charts.setOnLoadCallback(drawKrankenhausKapazitaetenStat);
+
         });
 
 
@@ -311,12 +323,19 @@
             testsData.addColumn('number', 'Anzahl Tests');
             testsData.addColumn('number', 'Prozent Fälle');
 
+
             merged_rest_data.forEach(function (data) {
                 const datum = data.datum;
                 const diffTests = data.diffTests;
                 const faellePositiv = data.anzahlNeueFaelle / diffTests;
                 testsData.addRow([datum, diffTests, faellePositiv]);
             });
+
+            var formatNumber = new google.visualization.NumberFormat({
+                pattern: '#.###%',
+            });
+
+            formatNumber.format(testsData, 2);
 
             const options = {
                 title: 'Anzahl Tests nach Tag ',
@@ -336,9 +355,15 @@
                 vAxes: {
                     0: {
                         title: 'Anzahl Tests',
+                        viewWindow: {
+                            min: 0,
+                        },
                     },
                     1: {
                         title: 'Prozent positiv',
+                        viewWindow: {
+                            min: 0,
+                        },
                         gridlines: {
                             color: 'transparent',
                         },
@@ -358,6 +383,93 @@
 
             let chart = new google.visualization.ComboChart(document.getElementById('drawAnzahlTestsGesamtStat_div'));
             chart.draw(testsData, options);
+        }
+
+
+
+
+
+        function drawKrankenhausKapazitaetenStat() {
+
+            let kapazitaetenData = new google.visualization.DataTable();
+            kapazitaetenData.addColumn('string', 'Datum');
+            kapazitaetenData.addColumn('number', 'freie Normal-Betten');
+            kapazitaetenData.addColumn('number', 'belegte Normal-Betten');
+            kapazitaetenData.addColumn('number', 'freie Intensiv-Betten');
+            kapazitaetenData.addColumn('number', 'belegte Intensiv-Betten');
+
+
+            rest_data_krankenhaus.forEach(function (data) {
+                const datum = data.datum;
+                const hospGesamt = data.fzHosp + data.fzHospFree;
+                const hospBelegt = data.fzHosp;
+                const intensivGesamt = data.fzIcu + data.fzIcuFree
+                const intensivBelegt = data.fzIcu;
+
+                kapazitaetenData.addRow([datum, hospGesamt, hospBelegt, intensivGesamt, intensivBelegt]);
+            });
+
+            const options = {
+                title: 'Krankenhaus Auslastungen nach Tag ',
+                seriesType: 'area',
+                series: {
+                    0: {
+                        type: 'area',
+                        targetAxisIndex: 0,
+                        color: '#4a86e8',
+                    },
+                    1: {
+                        type: 'line',
+                        targetAxisIndex: 0,
+                        color: 'blue',
+                    },
+                    2: {
+                        type: 'area',
+                        targetAxisIndex: 1,
+                        color: '#f6b26b',
+                    },
+                    3: {
+                        type: 'line',
+                        targetAxisIndex: 1,
+                        color: '#ff9900',
+                    },
+                },
+                legend: { position: 'top', },
+                height: 360,
+                chartArea: {
+                    left: 128,
+                    right: 128,
+                },
+                vAxes: {
+                    0: {
+                        title: 'Anzahl Betten',
+                        viewWindow: {
+                            min: 0,
+                        },
+                    },
+                    1: {
+                        title: 'Anzahl Intensiv',
+                        viewWindow: {
+                            min: 0,
+                        },
+                        gridlines: {
+                            color: 'transparent',
+                        },
+                    },
+                },
+                vAxis: { title: 'Anzahl', },
+                hAxis: {
+                    textPosition: 'out',
+                    slantedText: true,
+                    slantedTextAngle: 90,
+                    textStyle: {
+                        fontSize: 10,
+                    },
+                }
+            };
+
+            let chart = new google.visualization.ComboChart(document.getElementById('drawKrankenhausKapazitaetenStat_div'));
+            chart.draw(kapazitaetenData, options);
         }
 
 
@@ -518,18 +630,6 @@
                     <div class="col">
                         <nav class="navbar navbar-dark topbar mb-4 static-top">
                             <h3 class="text-light pt-3 pl-3" th:text="'Covid Dashboard - Stand: ' + ${#dates.format(latestDate, 'dd.MM.yyyy')}">Dashboard - Stand: </h3>
-<!--                            <form method="POST" th:action="@{/covid/index/}" th:object="${bundesland}"-->
-<!--                                class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">-->
-<!--                                <div class="input-group">-->
-<!--                                    <select id="name" class="custom-select" th:field="*{name}">-->
-<!--                                        <option th:each="bundeslands : ${bundeslandList}"-->
-<!--                                            th:value="${bundeslands.getName()}" th:text="${bundeslands.getName()}">-->
-<!--                                    </select>-->
-<!--                                    <div class="input-group-append">-->
-<!--                                        <button class="btn btn-secondary" type="submit">Auswählen</button>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                            </form>-->
                         </nav>
                     </div>
                 </div>
@@ -538,7 +638,7 @@
             <div class="container-fluid">
                 <div class="form-group row  justify-content-center">
                     <div class="col-auto">
-                        <form method="POST" th:action="@{/covid/index/}" th:object="${bundesland}"
+                        <form method="POST" th:action="@{/}" th:object="${bundesland}"
                               class="navbar-search">
                             <div class="input-group">
                                 <label class="col-form-label mr-2 " for="name">Region wählen: </label>
@@ -810,6 +910,18 @@
                     </div>
                 </div>
             </div>
+
+            <h4 class="text-light text-center pt-3 pl-3">Krankenhaus-Auslastung</h4>
+
+            <div class="container-fluid">
+                <div class="row justify-content-center">
+                    <div class="col-11 my-3 py-4 px-3 bg-gray-800">
+                        <div id="drawKrankenhausKapazitaetenStat_div"></div>
+                    </div>
+                </div>
+            </div>
+
+            
 
 
         </main>

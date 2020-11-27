@@ -18,7 +18,7 @@ import java.util.List;
 
 @Controller
 @Slf4j
-@RequestMapping("/covid")
+@RequestMapping()
 public class DataController {
 
   GesamtStatService gesamtStatService;
@@ -32,7 +32,7 @@ public class DataController {
     this.bundeslandService = bundeslandService;
   }
 
-  @GetMapping({"/", "/index", "/index/"})
+  @GetMapping({"", "/", "/index", "/index/"})
   public String showCovidIndexPage(Model model) {
 
     Bundesland bundesland = new Bundesland("Österreich") ;
@@ -63,7 +63,7 @@ public class DataController {
   }
 
 
-  @PostMapping("/index")
+  @PostMapping({"", "/", "/index", "/index/"})
   public String showCovidIndexPage(Model model,
                                    @ModelAttribute(name = "bundesland") Bundesland bundesland) {
 
