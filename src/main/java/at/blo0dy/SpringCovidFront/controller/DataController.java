@@ -51,7 +51,7 @@ public class DataController {
     GesamtStat latestGesamtStat = gesamtStatService.findLatestGesamtStatDataByBundesland(gesamtStatList, bundesland.getName().toLowerCase());
     List<GesamtStat> latestGesamtStatList = gesamtStatService.findlatestGesamtStatsForBundeslaender();
 
-    List<KrankenhausStat> krankenhausStatList = krankenhausStatService.findKrankenhausStatDataByBundesLand(bundesland.getName().toLowerCase());
+    List<KrankenhausStat> krankenhausStatList = krankenhausStatService.findKrankenhausStatDataByBundesLand(bundesland.getName().toLowerCase(), startDate, endDate);
     KrankenhausStat latestKrankenhausStat = krankenhausStatService.findLatestKrankenhausStatDataByBundesland(krankenhausStatList, bundesland.getName().toLowerCase());
     List<KrankenhausStat> latestKrankenhausStatList = krankenhausStatService.findLatestKrankenhausStatsForBundeslaender();
 
@@ -84,7 +84,6 @@ public class DataController {
       log.debug("DatumValidation Error erhalten");
       startDate = LocalDate.of(2020,02,20);
       endDate = LocalDate.now();
-      List<GesamtStat> gesamtStatList = gesamtStatService.findGesamtStatDataByBundesland(bundesland.getName().toLowerCase(), startDate, endDate);
     } else {
       startDate = datumForm.getStartDate();
       endDate = datumForm.getEndDate();
@@ -96,7 +95,7 @@ public class DataController {
     GesamtStat latestGesamtStat = gesamtStatService.findLatestGesamtStatDataByBundesland(gesamtStatList, bundesland.getName().toLowerCase());
     List<GesamtStat> latestGesamtStatList = gesamtStatService.findlatestGesamtStatsForBundeslaender();
 
-    List<KrankenhausStat> krankenhausStatList = krankenhausStatService.findKrankenhausStatDataByBundesLand(bundesland.getName().toLowerCase());
+    List<KrankenhausStat> krankenhausStatList = krankenhausStatService.findKrankenhausStatDataByBundesLand(bundesland.getName().toLowerCase(), startDate, endDate);
     KrankenhausStat latestKrankenhausStat = krankenhausStatService.findLatestKrankenhausStatDataByBundesland(krankenhausStatList, bundesland.getName().toLowerCase());
     List<KrankenhausStat> latestKrankenhausStatList = krankenhausStatService.findLatestKrankenhausStatsForBundeslaender();
 

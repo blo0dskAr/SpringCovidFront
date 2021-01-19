@@ -46,7 +46,7 @@ public class GesamtStatServiceImpl implements GesamtStatService {
   @Override
   public List<GesamtStat> findGesamtStatDataByBundesland(String bundesland, LocalDate startDate, LocalDate endDate) {
 
-//    // das Datum da umwandeln wirkt noch schiach, LocaldateConfig zieht beim erstellen nicht?
+    // das Datum da umwandeln wirkt noch schiach, LocaldateConfig zieht beim erstellen nicht?
     String moddedStartDate = startDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
     String moddedEndDate = endDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
 
