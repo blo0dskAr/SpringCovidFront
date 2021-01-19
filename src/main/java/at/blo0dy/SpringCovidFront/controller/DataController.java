@@ -2,6 +2,7 @@ package at.blo0dy.SpringCovidFront.controller;
 
 
 import at.blo0dy.SpringCovidFront.model.Bundesland;
+import at.blo0dy.SpringCovidFront.model.DatumForm;
 import at.blo0dy.SpringCovidFront.model.GesamtStat;
 import at.blo0dy.SpringCovidFront.model.KrankenhausStat;
 import at.blo0dy.SpringCovidFront.service.bundesland.BundeslandService;
@@ -11,8 +12,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -36,13 +40,18 @@ public class DataController {
   public String showCovidIndexPage(Model model) {
 
     Bundesland bundesland = new Bundesland("Österreich") ;
+    DatumForm datumForm = new DatumForm(LocalDate.of(2020,02,20), LocalDate.now(), bundesland);
+
+    LocalDate startDate = datumForm.getStartDate();
+    LocalDate endDate = datumForm.getEndDate();
+
     List<Bundesland> bundeslandListe = bundeslandService.loadBundeslaender();
 
-    List<GesamtStat> gesamtStatList = gesamtStatService.findGesamtStatDataByBundesland(bundesland.getName().toLowerCase());
+    List<GesamtStat> gesamtStatList = gesamtStatService.findGesamtStatDataByBundesland(bundesland.getName().toLowerCase(), startDate, endDate);
     GesamtStat latestGesamtStat = gesamtStatService.findLatestGesamtStatDataByBundesland(gesamtStatList, bundesland.getName().toLowerCase());
     List<GesamtStat> latestGesamtStatList = gesamtStatService.findlatestGesamtStatsForBundeslaender();
 
-    List<KrankenhausStat> krankenhausStatList = krankenhausStatService.findKrankenhausStatDataByBundesLand(bundesland.getName().toLowerCase());
+    List<KrankenhausStat> krankenhausStatList = krankenhausStatService.findKrankenhausStatDataByBundesLand(bundesland.getName().toLowerCase(), startDate, endDate);
     KrankenhausStat latestKrankenhausStat = krankenhausStatService.findLatestKrankenhausStatDataByBundesland(krankenhausStatList, bundesland.getName().toLowerCase());
     List<KrankenhausStat> latestKrankenhausStatList = krankenhausStatService.findLatestKrankenhausStatsForBundeslaender();
 
@@ -56,8 +65,8 @@ public class DataController {
     model.addAttribute("krankenhausStatList", krankenhausStatList);
     model.addAttribute("latestKrankenhausStat", latestKrankenhausStat);
     model.addAttribute("latestKrankenhausStatList", latestKrankenhausStatList);
-    model.addAttribute("bundesland", bundesland);
     model.addAttribute("latestDate", LatestDate);
+    model.addAttribute("datumForm", datumForm);
 
     return "gesamtStats";
   }
@@ -65,15 +74,28 @@ public class DataController {
 
   @PostMapping({"", "/", "/index", "/index/"})
   public String showCovidIndexPage(Model model,
-                                   @ModelAttribute(name = "bundesland") Bundesland bundesland) {
+                                   @ModelAttribute(name = "bundesland") Bundesland bundesland,
+                                   @Valid @ModelAttribute(name = "datumForm") DatumForm datumForm, BindingResult bindingResult) {
+
+    LocalDate startDate;
+    LocalDate endDate;
+
+    if (bindingResult.hasErrors()) {
+      log.debug("DatumValidation Error erhalten");
+      startDate = LocalDate.of(2020,02,20);
+      endDate = LocalDate.now();
+    } else {
+      startDate = datumForm.getStartDate();
+      endDate = datumForm.getEndDate();
+    }
 
     List<Bundesland> bundeslandListe =  bundeslandService.loadBundeslaender();
 
-    List<GesamtStat> gesamtStatList = gesamtStatService.findGesamtStatDataByBundesland(bundesland.getName().toLowerCase());
+    List<GesamtStat> gesamtStatList = gesamtStatService.findGesamtStatDataByBundesland(bundesland.getName().toLowerCase(), startDate, endDate);
     GesamtStat latestGesamtStat = gesamtStatService.findLatestGesamtStatDataByBundesland(gesamtStatList, bundesland.getName().toLowerCase());
     List<GesamtStat> latestGesamtStatList = gesamtStatService.findlatestGesamtStatsForBundeslaender();
 
-    List<KrankenhausStat> krankenhausStatList = krankenhausStatService.findKrankenhausStatDataByBundesLand(bundesland.getName().toLowerCase());
+    List<KrankenhausStat> krankenhausStatList = krankenhausStatService.findKrankenhausStatDataByBundesLand(bundesland.getName().toLowerCase(), startDate, endDate);
     KrankenhausStat latestKrankenhausStat = krankenhausStatService.findLatestKrankenhausStatDataByBundesland(krankenhausStatList, bundesland.getName().toLowerCase());
     List<KrankenhausStat> latestKrankenhausStatList = krankenhausStatService.findLatestKrankenhausStatsForBundeslaender();
 
@@ -81,14 +103,12 @@ public class DataController {
 
     model.addAttribute("gesamtStatList", gesamtStatList);
     model.addAttribute("bundeslandList", bundeslandListe);
-    model.addAttribute("bundesland", bundesland);
     model.addAttribute("latestGesamtStat", latestGesamtStat);
     model.addAttribute("latestGesamtStatList", latestGesamtStatList);
     model.addAttribute("krankenhausStatList", krankenhausStatList);
     model.addAttribute("latestKrankenhausStat", latestKrankenhausStat);
     model.addAttribute("latestKrankenhausStatList", latestKrankenhausStatList);
     model.addAttribute("latestDate", LatestDate);
-
 
     return "gesamtStats";
 
