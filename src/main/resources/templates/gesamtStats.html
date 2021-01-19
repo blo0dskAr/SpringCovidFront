@@ -12,7 +12,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
         integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-    <link rel="stylesheet" href="../static/css/sb-admin-2.css" th:href="@{/css/sb-admin-2.css}">
+    <link rel="stylesheet" th:href="@{/css/sb-admin-2.css}">
 
 
     <!-- jQuery and JS bundle w/ Popper.js -->
@@ -31,7 +31,7 @@
         // Load the Visualization API and the corechart package.
         google.charts.load('current', { 'packages': ['controls', 'corechart'], 'language': 'de' });
 
-        let activeBundesland = /*[[${bundesland}]]*/'noValue';
+        let activeBundesland = /*[[${datumForm.bundesland}]]*/'noValue';
         console.log(activeBundesland);
 
         // Set a callback to run when the Google Visualization API is loaded.
@@ -638,11 +638,27 @@
             <div class="container-fluid">
                 <div class="form-group row  justify-content-center">
                     <div class="col-auto">
-                        <form method="POST" th:action="@{/}" th:object="${bundesland}"
+                        <form method="POST" th:action="@{/}" th:object="${datumForm}"
                               class="navbar-search">
+                            <div class="input-group mb-2">
+                                 <span class="text-danger"
+                                       th:if="${#fields.hasErrors('startDate')}"
+                                       th:errors="*{startDate}">Ort Error
+                                 </span>
+                                <label class="col-form-label mr-2" for="startDate">Von: </label>
+                                <input type="date" class="form-control" id="startDate" name="startDate" th:field="*{startDate}">
+                            </div>
+                            <div class="input-group mb-2">
+                                 <span class="text-danger"
+                                       th:if="${#fields.hasErrors('endDate')}"
+                                       th:errors="*{endDate}">Ort Error
+                                 </span>
+                                <label class="col-form-label mr-2" for="endDate">Bis: </label>
+                                <input type="date" class="form-control" id="endDate" name="endDate" th:field="*{endDate}">
+                            </div>
                             <div class="input-group">
-                                <label class="col-form-label mr-2 " for="name">Region wählen: </label>
-                                <select id="name" class="custom-select" th:field="*{name}">
+                                <label class="col-form-label mr-2" for="name">Region wählen: </label>
+                                <select id="name" class="custom-select" th:field="*{bundesland}">
                                     <option th:each="bundeslands : ${bundeslandList}"
                                             th:value="${bundeslands.getName()}" th:text="${bundeslands.getName()}">
                                 </select>
@@ -834,7 +850,7 @@
             </div>
 
 
-            <th:block th:if="${bundesland.getName() == 'Österreich'}">
+            <th:block th:if="${datumForm.bundesland.getName().equals('Österreich')}">
                 <div class="container-fluid">
                     <h4 class="text-light text-center pt-3 pl-3">Anteile nach Bundesland - Heute</h4>
                     <div class="row justify-content-center">
