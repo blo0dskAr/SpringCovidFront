@@ -3,11 +3,14 @@ package at.blo0dy.SpringCovidFront.service.gesamtStat;
 import at.blo0dy.SpringCovidFront.model.GesamtStat;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -41,9 +44,13 @@ public class GesamtStatServiceImpl implements GesamtStatService {
   }
 
   @Override
-  public List<GesamtStat> findGesamtStatDataByBundesland(String bundesland) {
+  public List<GesamtStat> findGesamtStatDataByBundesland(String bundesland, LocalDate startDate, LocalDate endDate) {
 
-    ResponseEntity<GesamtStat[]> response = restTemplate.getForEntity(BASE_URL + "/getData/" + bundesland, GesamtStat[].class);
+    // das Datum da umwandeln wirkt noch schiach, LocaldateConfig zieht beim erstellen nicht?
+    String moddedStartDate = startDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+    String moddedEndDate = endDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+
+    ResponseEntity<GesamtStat[]> response = restTemplate.getForEntity(BASE_URL + "/getData/" + bundesland + "?startDate=" + moddedStartDate + "&endDate=" + moddedEndDate, GesamtStat[].class);
 
     List<GesamtStat> gesamtStatList = Arrays.asList(response.getBody());
 
